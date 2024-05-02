@@ -12,6 +12,8 @@ dependencies:
 
   fluttertoast: ^8.2.4
   flutter_gravatar: any
+  firebase_core: ^2.24.2
+  cloud_firestore:
 
 dev_dependencies:
   flutter_test:

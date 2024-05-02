@@ -1,17 +1,17 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutterlist/userdata.dart';
+import 'package:flutterlist/services/firebase_service.dart';
+import 'package:flutterlist/models/user_data.dart';
 import 'package:flutterlist/useritem.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:developer';
 
-class UserList extends StatefulWidget{
-
+class UserList extends StatefulWidget {
   @override
   State<UserList> createState() => _UserListState();
 }
 
 class _UserListState extends State<UserList> {
+  FirebaseService firebaseService = FirebaseService();
+
   TextEditingController nama = TextEditingController();
 
   TextEditingController umur = TextEditingController();
@@ -36,126 +36,126 @@ class _UserListState extends State<UserList> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Container(
-          padding: EdgeInsets.all(5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                padding: EdgeInsets.all(5),
-                child: TextField(
-                  controller: nama,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Nama",
-                    border: OutlineInputBorder()
-                  ),
-                ),
+        home: Scaffold(
+      body: Container(
+        padding: EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                controller: nama,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    labelText: "Nama", border: OutlineInputBorder()),
               ),
-              Container(
-                padding: EdgeInsets.all(5),
-                child: TextField(
-                  controller: umur,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Umur",
-                    border: OutlineInputBorder()
-                  ),
-                ),
+            ),
+            Container(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                controller: umur,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    labelText: "Umur", border: OutlineInputBorder()),
               ),
-              Container(
-                padding: EdgeInsets.all(5),
-                child: TextField(
-                  controller: email,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Email",
-                    border: OutlineInputBorder()
-                  ),
-                ),
+            ),
+            Container(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                controller: email,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    labelText: "Email", border: OutlineInputBorder()),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    child: ElevatedButton(
-                      onPressed: (){
-                        try{
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      try {
+                        if (nama.text.isEmpty ||
+                            umur.text.isEmpty ||
+                            email.text.isEmpty)
+                          throw ("Data tidak boleh kosong");
 
-                          if(nama.text.isEmpty || umur.text.isEmpty || email.text.isEmpty)
-                            throw("Data tidak boleh kosong");
-
-                          if(btnSimpanText == btnSimpanTextDefault){
-                            // INI MENUNJUKAN SAVE
-                            daftarUser.add(UserData(nama.text, int.parse(umur.text), email.text));
-                          }else{
-                            UserData userData = daftarUser[selectedDaftarUserIndex];
-                            userData.nama = nama.text;
-                            userData.umur = int.parse(umur.text);
-                            userData.email = email.text;
-                            daftarUser[selectedDaftarUserIndex] = userData;
-                            btnSimpanColor = btnSimpanColorDefault;
-                            btnSimpanText = btnSimpanTextDefault;
-                            setState(() {
-                              btnSimpanColor;
-                              btnSimpanText;
-                            });
-                          }
-
-                          setState(() {
-                            daftarUser;
-                          });
-
-                          nama.text = "";
-                          umur.text = "";
-                          email.text = "";
-                        }catch(e){
-                          Fluttertoast.showToast(
-                            msg: '$e'
+                        if (btnSimpanText == btnSimpanTextDefault) {
+                          // INI MENUNJUKAN SAVE
+                          UserData userData = new UserData(
+                            nama.text,
+                            int.parse(umur.text),
+                            email.text,
                           );
+                          firebaseService.tambah(userData);
+                          // daftarUser.add(UserData(nama.text, int.parse(umur.text), email.text));
+                        } else {
+                          UserData userData =
+                              daftarUser[selectedDaftarUserIndex];
+                          userData.nama = nama.text;
+                          userData.umur = int.parse(umur.text);
+                          userData.email = email.text;
+                          daftarUser[selectedDaftarUserIndex] = userData;
+                          btnSimpanColor = btnSimpanColorDefault;
+                          btnSimpanText = btnSimpanTextDefault;
+                          setState(() {
+                            btnSimpanColor;
+                            btnSimpanText;
+                          });
                         }
-                      }, 
-                      child: Text(btnSimpanText),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: btnSimpanColor,
-                        minimumSize: Size(150, 75),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    child: ElevatedButton(
-                      onPressed: (){
+
+                        setState(() {
+                          daftarUser;
+                        });
+
                         nama.text = "";
                         umur.text = "";
                         email.text = "";
-                        btnSimpanColor = btnSimpanColorDefault;
-                        btnSimpanText = btnSimpanTextDefault;
-                        setState(() {
-                          btnSimpanColor;
-                          btnSimpanText;
-                        });
-                      }, 
-                      child: Text("Clear"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        minimumSize: Size(150, 75),
-                      ),
+                      } catch (e) {
+                        Fluttertoast.showToast(msg: '$e');
+                      }
+                    },
+                    child: Text(btnSimpanText),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: btnSimpanColor,
+                      minimumSize: Size(150, 75),
                     ),
                   ),
-                ],
-              ),
-              Divider(
-                height: 20,
-                thickness: 3,
-              ),
-              Expanded(
-                child: ListView.separated(
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      nama.text = "";
+                      umur.text = "";
+                      email.text = "";
+                      btnSimpanColor = btnSimpanColorDefault;
+                      btnSimpanText = btnSimpanTextDefault;
+                      setState(() {
+                        btnSimpanColor;
+                        btnSimpanText;
+                      });
+                    },
+                    child: Text("Clear"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      minimumSize: Size(150, 75),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Divider(
+              height: 20,
+              thickness: 3,
+            ),
+            Expanded(
+              child: ListView.separated(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemBuilder: (context, index){
+                  itemBuilder: (context, index) {
                     return Dismissible(
                       key: ValueKey(daftarUser[index]),
                       child: InkWell(
@@ -174,61 +174,61 @@ class _UserListState extends State<UserList> {
                         },
                       ),
                       background: Container(
-                        padding: EdgeInsets.only(left:25),
+                        padding: EdgeInsets.only(left: 25),
                         color: Colors.red,
                         child: Align(
-                          alignment: Alignment.centerLeft,
-                          child:Icon(Icons.delete, color: Colors.white,)),
+                            alignment: Alignment.centerLeft,
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            )),
                       ),
                       secondaryBackground: Container(
                         color: Colors.white,
                       ),
-                      dismissThresholds: {
-                        DismissDirection.startToEnd: 0.2
-                      },
+                      dismissThresholds: {DismissDirection.startToEnd: 0.2},
                       onDismissed: (direction) {
                         daftarUser.removeAt(index);
-                          setState(() {
-                            daftarUser;
+                        setState(() {
+                          daftarUser;
                         });
                         // inspect(daftarUser);
                       },
-                      confirmDismiss:(direction) async {
-                        if(direction == DismissDirection.startToEnd){
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.startToEnd) {
                           return await showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: const Text("Confirm"),
-                                              content: const Text("Are you sure you wish to delete this item?"),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () => Navigator.of(context).pop(true),
-                                                  child: const Text("DELETE")
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () => Navigator.of(context).pop(false),
-                                                  child: const Text("CANCEL"),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                        }else{
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Confirm"),
+                                content: const Text(
+                                    "Are you sure you wish to delete this item?"),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: const Text("DELETE")),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text("CANCEL"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
                           return false;
                         }
                       },
                     );
-                  } , 
-                  separatorBuilder:(context, index) => Divider(), 
-                  itemCount: daftarUser.length
-                ),
-              ),
-            ],
-          ),
+                  },
+                  separatorBuilder: (context, index) => Divider(),
+                  itemCount: daftarUser.length),
+            ),
+          ],
         ),
-    
-      )
-    );
+      ),
+    ));
   }
 }
