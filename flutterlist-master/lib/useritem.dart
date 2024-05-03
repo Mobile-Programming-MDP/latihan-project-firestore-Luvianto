@@ -1,8 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutterlist/userdata.dart';
 import 'package:flutter_gravatar/flutter_gravatar.dart';
-import 'package:flutter_gravatar/utils.dart';
+import 'package:flutterlist/models/user_data.dart';
 
 class UserItem extends StatefulWidget{
 
