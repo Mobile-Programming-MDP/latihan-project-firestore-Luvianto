@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/services/note_service.dart';
+import 'package:notes/widgets/delete_dialog.dart';
 import 'package:notes/widgets/note_dialog.dart';
 
 class NoteListScreen extends StatefulWidget {
@@ -67,7 +68,13 @@ class NoteList extends StatelessWidget {
                     subtitle: Text(document.description),
                     trailing: InkWell(
                       onTap: () {
-                        NoteService.deleteNote(document);
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeleteDialog(note: document);
+                          },
+                        );
+                        // NoteService.deleteNote(document);
                       },
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
