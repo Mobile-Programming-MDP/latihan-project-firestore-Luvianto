@@ -37,6 +37,8 @@ class NoteService {
       'title': note.title,
       'description': note.description,
       'image_url': note.imageUrl,
+      'latitude': note.lat,
+      'longitude': note.lng,
       'created_at': FieldValue.serverTimestamp(),
       'updated_at': FieldValue.serverTimestamp(),
     };
@@ -47,6 +49,8 @@ class NoteService {
     Map<String, dynamic> updatedNote = {
       'title': note.title,
       'description': note.description,
+      'latitude': note.lat,
+      'longitude': note.lng,
       'image_url': note.imageUrl,
       'created_at': note.createdAt,
       'updated_at': FieldValue.serverTimestamp(),
@@ -71,6 +75,8 @@ class NoteService {
           id: doc.id,
           title: data['title'],
           description: data['description'],
+          lat: data['latitude'],
+          lng: data['longitude'],
           imageUrl: data['image_url'],
           createdAt: data['created_at'] != null
               ? data['created_at'] as Timestamp
