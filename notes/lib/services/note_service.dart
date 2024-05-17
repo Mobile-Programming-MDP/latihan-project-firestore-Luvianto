@@ -1,13 +1,10 @@
-// Firebase Service
+import 'dart:io' as io;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-// Dependency
-import 'package:image_picker/image_picker.dart';
-// other
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:notes/models/note.dart';
 import 'package:path/path.dart' as path;
-import 'dart:io' as io;
 
 class NoteService {
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
@@ -18,7 +15,7 @@ class NoteService {
   static Future<String?> uploadImage(XFile file) async {
     try {
       String fileName = path.basename(file.path);
-      Reference ref = _storage.ref().child('images').child('/$fileName');
+      Reference ref = _storage.ref().child('images').child('/${fileName}');
       UploadTask uploadTask;
 
       if (kIsWeb) {
@@ -39,7 +36,7 @@ class NoteService {
     Map<String, dynamic> newNote = {
       'title': note.title,
       'description': note.description,
-      'imageUrl': note.imageUrl,
+      'image_url': note.imageUrl,
       'created_at': FieldValue.serverTimestamp(),
       'updated_at': FieldValue.serverTimestamp(),
     };
@@ -50,7 +47,7 @@ class NoteService {
     Map<String, dynamic> updatedNote = {
       'title': note.title,
       'description': note.description,
-      'imageUrl': note.imageUrl,
+      'image_url': note.imageUrl,
       'created_at': note.createdAt,
       'updated_at': FieldValue.serverTimestamp(),
     };
@@ -74,6 +71,7 @@ class NoteService {
           id: doc.id,
           title: data['title'],
           description: data['description'],
+          imageUrl: data['image_url'],
           createdAt: data['created_at'] != null
               ? data['created_at'] as Timestamp
               : null,

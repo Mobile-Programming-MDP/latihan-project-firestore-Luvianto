@@ -25,6 +25,7 @@ class DeleteDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             NoteService.deleteNote(note);
+            Navigator.of(context).pop();
           },
           child: const Text('Delete'),
         ),
