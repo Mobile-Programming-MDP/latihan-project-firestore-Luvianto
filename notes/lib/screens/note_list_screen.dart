@@ -49,9 +49,7 @@ class NoteList extends StatelessWidget {
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 30),
           child: Consumer<ThemeNotifier>(
             builder: (context, notifier, child) => SwitchListTile.adaptive(
-              title: notifier.darkMode!
-                  ? const Text('Dark Mode')
-                  : const Text("Light Mode"),
+              title: const Text('Dark Mode'),
               onChanged: (val) {
                 notifier.toggleChangeTheme(val);
               },

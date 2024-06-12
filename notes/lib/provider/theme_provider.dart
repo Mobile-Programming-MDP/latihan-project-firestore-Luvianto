@@ -19,29 +19,37 @@ ThemeData lightMode = ThemeData(
     style: TextButton.styleFrom(foregroundColor: Colors.black),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(foregroundColor: Colors.black),
+    style: ElevatedButton.styleFrom(
+      foregroundColor: Colors.black,
+    ),
+  ),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    foregroundColor: Colors.black,
   ),
   iconTheme: const IconThemeData(color: Colors.black),
   textTheme: Typography.blackCupertino,
 );
 
 ThemeData darkMode = ThemeData(
-  brightness: Brightness.dark,
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.black,
-  ),
-  colorScheme: ColorScheme.dark(
-    background: Colors.black,
-    primary: Colors.grey.shade900,
-    secondary: Colors.grey.shade600,
-  ),
-  textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: Colors.white),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
-  ),
-);
+    brightness: Brightness.dark,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.black,
+    ),
+    colorScheme: ColorScheme.dark(
+      background: Colors.black,
+      primary: Colors.grey.shade600,
+      secondary: Colors.white,
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(foregroundColor: Colors.white),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      foregroundColor: Colors.black,
+    ),
+    dialogBackgroundColor: Colors.grey.shade800);
 
 class ThemeNotifier extends ChangeNotifier {
   final String key = "theme";

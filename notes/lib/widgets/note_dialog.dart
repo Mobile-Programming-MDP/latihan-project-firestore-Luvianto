@@ -31,7 +31,7 @@ class _NoteDialogState extends State<NoteDialog> {
 
   Future<void> _pickImage() async {
     final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       setState(() {
         _imageFile = pickedFile;
