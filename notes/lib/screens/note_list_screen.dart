@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/models/note.dart';
 import 'package:notes/provider/theme_provider.dart';
@@ -5,6 +9,7 @@ import 'package:notes/screens/google_map_screen.dart';
 import 'package:notes/services/note_service.dart';
 import 'package:notes/widgets/note_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NoteListScreen extends StatefulWidget {
@@ -27,7 +32,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              return NoteDialog();
+              return const NoteDialog();
             },
           );
         },
@@ -142,6 +147,17 @@ class NoteList extends StatelessWidget {
                                       child: Icon(Icons.delete),
                                     ),
                                   ),
+                                  InkWell(
+                                    onTap: () {
+                                      _onShareWithResult(
+                                          context, document.imageUrl);
+                                    },
+                                    child: const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Icon(Icons.share),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -155,6 +171,52 @@ class NoteList extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _onShareWithResult(BuildContext context, String? imageUrl) async {
+    final box = context.findRenderObject() as RenderBox?;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    ShareResult shareResult;
+    if (imageUrl != null && Uri.parse(imageUrl).isAbsolute) {
+      final http.Response responseData = await http.get(Uri.parse(imageUrl));
+
+      Uint8List uint8list = responseData.bodyBytes;
+      var buffer = uint8list.buffer;
+      ByteData byteData = ByteData.view(buffer);
+
+      var tempDir = await getTemporaryDirectory();
+      File file = await File('${tempDir.path}/img').writeAsBytes(
+          buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      final files = <XFile>[];
+
+      files.add(XFile(file.path));
+
+      shareResult = await Share.shareXFiles(
+        files,
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+      );
+    } else {
+      shareResult = await Share.share(
+        'Kosong',
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+      );
+    }
+    scaffoldMessenger.showSnackBar(getResultSnackBar(shareResult));
+  }
+
+  SnackBar getResultSnackBar(ShareResult result) {
+    return SnackBar(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Share result: ${result.status}"),
+          if (result.status == ShareResultStatus.success)
+            Text("Shared to: ${result.raw}")
+        ],
+      ),
     );
   }
 

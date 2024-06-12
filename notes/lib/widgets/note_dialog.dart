@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,7 +9,7 @@ import 'package:notes/services/note_service.dart';
 class NoteDialog extends StatefulWidget {
   final Note? note;
 
-  NoteDialog({super.key, this.note});
+  const NoteDialog({super.key, this.note});
 
   @override
   State<NoteDialog> createState() => _NoteDialogState();
@@ -86,8 +85,8 @@ class _NoteDialogState extends State<NoteDialog> {
           ),
           Expanded(
             child: _imageFile != null && _source == ImageSource.gallery
-                ? Image.network(
-                    _imageFile!.path,
+                ? Image.file(
+                    File(_imageFile!.path),
                     fit: BoxFit.cover,
                   )
                 : _imageFile != null && _source == ImageSource.camera
@@ -103,25 +102,31 @@ class _NoteDialogState extends State<NoteDialog> {
                           )
                         : Container()),
           ),
-          TextButton(
-            onPressed: () {
-              _pickImage(ImageSource.camera);
-            },
-            child: const Text("Open camera"),
-          ),
-          TextButton(
-            onPressed: () {
-              _pickImage(ImageSource.gallery);
-            },
-            child: const Text("Open Gallery"),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  _pickImage(ImageSource.camera);
+                },
+                icon: const Icon(Icons.camera_alt),
+              ),
+              IconButton(
+                onPressed: () {
+                  _pickImage(ImageSource.gallery);
+                },
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+              ),
+              IconButton(
+                onPressed: () {
+                  _clear();
+                },
+                icon: const Icon(Icons.delete),
+              ),
+            ],
           ),
           TextButton(
             onPressed: _getLocation,
             child: const Text("Get Location"),
-          ),
-          TextButton(
-            onPressed: _clear,
-            child: const Text("Clear"),
           ),
           Text(
             _position?.latitude != null && _position?.longitude != null
@@ -155,12 +160,12 @@ class _NoteDialogState extends State<NoteDialog> {
               title: _titleController.text,
               description: _descriptionController.text,
               imageUrl: imageUrl,
-              lat: widget.note?.lat.toString() != _position!.latitude.toString()
-                  ? _position!.latitude.toString()
+              lat: widget.note?.lat.toString() != _position?.latitude.toString()
+                  ? _position?.latitude.toString()
                   : widget.note?.lat.toString(),
               lng:
-                  widget.note?.lng.toString() != _position!.longitude.toString()
-                      ? _position!.latitude.toString()
+                  widget.note?.lng.toString() != _position?.longitude.toString()
+                      ? _position?.latitude.toString()
                       : widget.note?.lng.toString(),
               createdAt: widget.note?.createdAt,
             );
