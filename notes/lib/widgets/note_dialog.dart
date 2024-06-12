@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +20,7 @@ class _NoteDialogState extends State<NoteDialog> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   XFile? _imageFile;
+  ImageSource? _source;
   Position? _position;
 
   @override
@@ -29,9 +32,11 @@ class _NoteDialogState extends State<NoteDialog> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+  Future<void> _pickImage(ImageSource source) async {
+    setState(() {
+      _source = source;
+    });
+    final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _imageFile = pickedFile;
@@ -43,6 +48,12 @@ class _NoteDialogState extends State<NoteDialog> {
     final location = await LocationService().getCurrentLocation();
     setState(() {
       _position = location;
+    });
+  }
+
+  void _clear() {
+    setState(() {
+      _imageFile = null;
     });
   }
 
@@ -74,26 +85,43 @@ class _NoteDialogState extends State<NoteDialog> {
             child: Text('Image: '),
           ),
           Expanded(
-            child: _imageFile != null
+            child: _imageFile != null && _source == ImageSource.gallery
                 ? Image.network(
                     _imageFile!.path,
                     fit: BoxFit.cover,
                   )
-                : (widget.note?.imageUrl != null &&
-                        Uri.parse(widget.note!.imageUrl!).isAbsolute
-                    ? Image.network(
-                        widget.note!.imageUrl!,
+                : _imageFile != null && _source == ImageSource.camera
+                    ? Image.file(
+                        File(_imageFile!.path),
                         fit: BoxFit.cover,
                       )
-                    : Container()),
+                    : (widget.note?.imageUrl != null &&
+                            Uri.parse(widget.note!.imageUrl!).isAbsolute
+                        ? Image.network(
+                            widget.note!.imageUrl!,
+                            fit: BoxFit.cover,
+                          )
+                        : Container()),
           ),
           TextButton(
-            onPressed: _pickImage,
-            child: const Text("Pick Image"),
+            onPressed: () {
+              _pickImage(ImageSource.camera);
+            },
+            child: const Text("Open camera"),
+          ),
+          TextButton(
+            onPressed: () {
+              _pickImage(ImageSource.gallery);
+            },
+            child: const Text("Open Gallery"),
           ),
           TextButton(
             onPressed: _getLocation,
             child: const Text("Get Location"),
+          ),
+          TextButton(
+            onPressed: _clear,
+            child: const Text("Clear"),
           ),
           Text(
             _position?.latitude != null && _position?.longitude != null
